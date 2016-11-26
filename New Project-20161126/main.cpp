@@ -9,21 +9,20 @@ using namespace std;
 #define Point Point<float>
 
 Point* points, *centroids;
-unsigned N, K;
+unsigned N, D, K;
 pair<unsigned, float>* idxs; // Array with cluster indexes to which points belong and their distances
 
 void read() {
 	freopen("input.txt", "r", stdin);
 	
-	unsigned n;
-	scanf("%u %u %u", &N, &n, &K);
+	scanf("%u %u %u", &N, &D, &K);
 	points = new Point[N];
 	centroids = new Point[K];
 	idxs = new pair<unsigned, float>[N];
 	
 	for(unsigned i = 0; i < N; i++) {
-		points[i] = Point(n);
-		for(unsigned j = 0; j < n; j++)
+		points[i] = Point(D);
+		for(unsigned j = 0; j < D; j++)
 			scanf("%f", &points[i][j]);
 	}
 	
@@ -69,7 +68,7 @@ pair<unsigned, float> nearest(Point P, unsigned chosen_centroids = K) {
 	return min;
 }
 
-void kmeanspp() {
+void kmeanspp(unsigned K) {
 	
 	/*
 		1. Choose one center uniformly at random from among the data points.
@@ -116,15 +115,16 @@ void kmeanspp() {
 	while(chosen_centroids != K);
 }
 
-void kmeans() {
-	kmeanspp(); // Choose initial points
+void kmeans(unsigned K) {
+	kmeanspp(K); // Choose initial points
+	
 	Point* mass_center = new Point[K];
 	unsigned* nink = new unsigned[K];
 
 	unsigned changed;
     do {
 		for(unsigned k = 0; k < K; k++) {
-		    mass_center[k] = Point(4);
+		    mass_center[k] = Point(D);
 			nink[k] = 0;
 		}
 		
@@ -139,6 +139,7 @@ void kmeans() {
 				nink[idx.first]++;
 			}
 		}
+		
 		for(unsigned k = 0; k < K; k++) {
 			mass_center[k] /= nink[k];
 		}
@@ -146,13 +147,11 @@ void kmeans() {
 	while(changed > 0.999 * N); // End when 99.9% of points are fixed
 }
 
-
 int main()
 {
 
     read();
-    kmeans();
+    kmeans(K);
     write();
     
 }
-
